@@ -1551,3 +1551,19 @@ def test_inherited_model_field_untouched():
 
     assert id(image_1) == id(item.images[0])
     assert id(image_2) == id(item.images[1])
+
+
+def test_exclude():
+    class Model1(BaseModel):
+        visible: str
+        hidden: str
+
+    class Model2(Model1):
+        class Config:
+            exclude = {'hidden': ...}
+
+    model = Model1(visible='a', hidden='b')
+    assert model.dict(exclude={'hidden': ...}) == {'visible': 'a'}
+
+    model = Model2(visible='a', hidden='b')
+    assert model.dict() == {'visible': 'a'}

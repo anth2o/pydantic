@@ -135,6 +135,7 @@ class BaseConfig:
     json_dumps: Callable[..., str] = json.dumps
     json_encoders: Dict[Type[Any], AnyCallable] = {}
     underscore_attrs_are_private: bool = False
+    exclude: Dict[str, Any] = {}
 
     # Whether or not inherited models as fields should be reconstructed as base model
     copy_on_model_validation: bool = True
@@ -833,6 +834,9 @@ class BaseModel(Representation, metaclass=ModelMetaclass):
         exclude_defaults: bool = False,
         exclude_none: bool = False,
     ) -> 'TupleGenerator':
+
+        exclude = exclude or {}
+        exclude.update(self.Config.exclude)
 
         allowed_keys = self._calculate_keys(include=include, exclude=exclude, exclude_unset=exclude_unset)
         if allowed_keys is None and not (to_dict or by_alias or exclude_unset or exclude_defaults or exclude_none):
